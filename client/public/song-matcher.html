@@ -1,0 +1,462 @@
+<!doctype html>
+<!--
+  Style reminder: keep this app self-contained, polished, and playful.
+  The page should use a music-themed visual language that still harmonizes with the
+  larger site, and all HTML, CSS, and JavaScript should remain in this single file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dire Straits Song Matcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0c1711;
+        --panel: rgba(17, 34, 24, 0.84);
+        --panel-strong: rgba(9, 19, 13, 0.92);
+        --border: rgba(164, 196, 142, 0.22);
+        --gold: #c8b27c;
+        --green: #9bc88d;
+        --green-strong: #4a8a5d;
+        --cream: #f7f3e6;
+        --soft: rgba(247, 243, 230, 0.76);
+        --danger: #cf7c6c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Manrope", sans-serif;
+        color: var(--cream);
+        background:
+          linear-gradient(rgba(7, 14, 10, 0.72), rgba(7, 14, 10, 0.92)),
+          url("https://d2xsxph8kpxj0f.cloudfront.net/310519663033384199/Gt37cq9MCSVXufEkrnXxcH/dire-straits-hero-XP6chwXzWoZ9ZMeHgpunZP.webp") center/cover fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .app-shell {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 1.25rem;
+        grid-template-columns: 0.96fr 1.04fr;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(16px);
+      }
+
+      .intro {
+        padding: 2rem;
+      }
+
+      .intro h1,
+      .game-card h2,
+      .results-card h2 {
+        font-family: "Libre Baskerville", serif;
+        line-height: 1.05;
+        margin: 0;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        font-size: 0.78rem;
+        color: var(--soft);
+      }
+
+      .intro h1 {
+        font-size: clamp(2.7rem, 6vw, 4.8rem);
+        margin-top: 1rem;
+      }
+
+      p,
+      li,
+      label {
+        line-height: 1.8;
+        color: rgba(247, 243, 230, 0.86);
+      }
+
+      .intro ul {
+        padding-left: 1.2rem;
+      }
+
+      .nav-row {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+      }
+
+      .nav-row a,
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.95rem 1.2rem;
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+      }
+
+      .nav-row a {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--cream);
+        border: 1px solid rgba(200, 178, 124, 0.28);
+      }
+
+      .nav-row a:hover,
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      .workspace {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .game-card,
+      .results-card {
+        padding: 1.6rem;
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      .meta-chip {
+        padding: 0.8rem 1rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--soft);
+      }
+
+      .clue-box {
+        margin-top: 1.2rem;
+        border-radius: 24px;
+        padding: 1.35rem;
+        background: var(--panel-strong);
+        border: 1px solid rgba(200, 178, 124, 0.22);
+      }
+
+      .clue-box strong {
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--gold);
+      }
+
+      .clue-text {
+        margin-top: 0.7rem;
+        font-size: 1.1rem;
+        color: var(--cream);
+      }
+
+      .answer-grid {
+        display: grid;
+        gap: 0.85rem;
+        margin-top: 1.2rem;
+      }
+
+      .answer-btn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--cream);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+      }
+
+      .answer-btn.correct {
+        background: rgba(74, 138, 93, 0.2);
+        border-color: rgba(155, 200, 141, 0.65);
+      }
+
+      .answer-btn.incorrect {
+        background: rgba(207, 124, 108, 0.16);
+        border-color: rgba(207, 124, 108, 0.65);
+      }
+
+      .primary-btn {
+        background: var(--green-strong);
+        color: white;
+      }
+
+      .secondary-btn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--cream);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .button-row {
+        margin-top: 1.2rem;
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+
+      .status-line {
+        margin-top: 1rem;
+        min-height: 2rem;
+        font-weight: 700;
+      }
+
+      .status-line.good {
+        color: var(--green);
+      }
+
+      .status-line.bad {
+        color: #efad9d;
+      }
+
+      .results-list {
+        margin: 1rem 0 0;
+        padding-left: 1.1rem;
+      }
+
+      .results-card {
+        background: rgba(10, 21, 14, 0.9);
+      }
+
+      @media (max-width: 900px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel intro">
+        <div class="eyebrow">Single-page web app</div>
+        <h1>Dire Straits Song Matcher</h1>
+        <p>
+          Match each clue to the correct song title. This game keeps its HTML, CSS, and JavaScript in one file and adds
+          a more interactive requirement to the project while staying connected to the Dire Straits scratch-page theme.
+        </p>
+        <ul>
+          <li>Each round gives one clue and four possible songs.</li>
+          <li>Your score updates immediately after each guess.</li>
+          <li>Use the reset button to reshuffle and play again.</li>
+        </ul>
+        <div class="nav-row">
+          <a href="/scratch.html">Back to Scratch Page</a>
+          <a href="/">Professional Home</a>
+          <a href="/resume">HTML Résumé</a>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel game-card">
+          <div class="eyebrow">Round <span id="round-number">1</span></div>
+          <h2 id="song-prompt">Can you match the clue to the right song?</h2>
+
+          <div class="meta-row">
+            <div class="meta-chip">Score: <span id="score">0</span></div>
+            <div class="meta-chip">Answered: <span id="answered">0</span></div>
+            <div class="meta-chip">Remaining: <span id="remaining">5</span></div>
+          </div>
+
+          <div class="clue-box">
+            <strong>Clue</strong>
+            <div id="clue-text" class="clue-text">Loading first round...</div>
+          </div>
+
+          <div id="answer-grid" class="answer-grid"></div>
+
+          <div id="status-line" class="status-line"></div>
+
+          <div class="button-row">
+            <button id="next-btn" class="primary-btn" disabled>Next Round</button>
+            <button id="reset-btn" class="secondary-btn">Reset Game</button>
+          </div>
+        </div>
+
+        <div class="panel results-card">
+          <div class="eyebrow">Progress</div>
+          <h2>Results log</h2>
+          <p>
+            Keep track of your guesses here. The goal is to finish with a perfect score and prove that you really know
+            your Dire Straits catalog.
+          </p>
+          <ol id="results-list" class="results-list"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const rounds = [
+        {
+          clue: "A narrative song that Lauren selected for the scratch-page video embed.",
+          answer: "Romeo and Juliet",
+          options: ["Romeo and Juliet", "Walk of Life", "Money for Nothing", "Lady Writer"],
+        },
+        {
+          clue: "The breakout classic associated with a tight groove and an unforgettable opening guitar line.",
+          answer: "Sultans of Swing",
+          options: ["So Far Away", "Industrial Disease", "Sultans of Swing", "Private Investigations"],
+        },
+        {
+          clue: "A later-era hit famous for its sharp MTV-era satire and massive riff.",
+          answer: "Money for Nothing",
+          options: ["Tunnel of Love", "Expresso Love", "Money for Nothing", "Skateaway"],
+        },
+        {
+          clue: "A reflective song title that also became the name of one of the band’s most recognized albums.",
+          answer: "Brothers in Arms",
+          options: ["Brothers in Arms", "News", "Telegraph Road", "Love over Gold"],
+        },
+        {
+          clue: "An upbeat favorite built around movement, rhythm, and one of the band’s most crowd-pleasing choruses.",
+          answer: "Walk of Life",
+          options: ["Walk of Life", "Down to the Waterline", "Romeo and Juliet", "Solid Rock"],
+        },
+      ];
+
+      const scoreEl = document.getElementById("score");
+      const answeredEl = document.getElementById("answered");
+      const remainingEl = document.getElementById("remaining");
+      const roundNumberEl = document.getElementById("round-number");
+      const clueTextEl = document.getElementById("clue-text");
+      const answerGridEl = document.getElementById("answer-grid");
+      const statusLineEl = document.getElementById("status-line");
+      const nextBtn = document.getElementById("next-btn");
+      const resetBtn = document.getElementById("reset-btn");
+      const resultsListEl = document.getElementById("results-list");
+
+      let gameState = {
+        score: 0,
+        currentRound: 0,
+        answered: 0,
+        playedRounds: [],
+      };
+
+      function shuffle(array) {
+        const copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      function buildDeck() {
+        gameState.playedRounds = shuffle(rounds).map((round) => ({
+          ...round,
+          options: shuffle(round.options),
+        }));
+      }
+
+      function updateMeta() {
+        scoreEl.textContent = gameState.score;
+        answeredEl.textContent = gameState.answered;
+        remainingEl.textContent = rounds.length - gameState.answered;
+        roundNumberEl.textContent = Math.min(gameState.currentRound + 1, rounds.length);
+      }
+
+      function addResult(text) {
+        const item = document.createElement("li");
+        item.textContent = text;
+        resultsListEl.prepend(item);
+      }
+
+      function renderRound() {
+        const round = gameState.playedRounds[gameState.currentRound];
+        if (!round) {
+          clueTextEl.textContent = "Game complete.";
+          answerGridEl.innerHTML = "";
+          statusLineEl.textContent = `Final score: ${gameState.score} out of ${rounds.length}.`;
+          statusLineEl.className = "status-line good";
+          nextBtn.disabled = true;
+          return;
+        }
+
+        clueTextEl.textContent = round.clue;
+        answerGridEl.innerHTML = "";
+        statusLineEl.textContent = "Choose the song title that best matches the clue.";
+        statusLineEl.className = "status-line";
+        nextBtn.disabled = true;
+
+        round.options.forEach((option) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "answer-btn";
+          button.textContent = option;
+          button.addEventListener("click", () => handleGuess(button, option, round.answer));
+          answerGridEl.appendChild(button);
+        });
+
+        updateMeta();
+      }
+
+      function handleGuess(button, guess, answer) {
+        const buttons = Array.from(document.querySelectorAll(".answer-btn"));
+        buttons.forEach((btn) => (btn.disabled = true));
+
+        const correctButton = buttons.find((btn) => btn.textContent === answer);
+        if (correctButton) {
+          correctButton.classList.add("correct");
+        }
+
+        gameState.answered += 1;
+
+        if (guess === answer) {
+          gameState.score += 1;
+          button.classList.add("correct");
+          statusLineEl.textContent = `Correct. "${answer}" was the right match.`;
+          statusLineEl.className = "status-line good";
+          addResult(`Correct: ${answer}`);
+        } else {
+          button.classList.add("incorrect");
+          statusLineEl.textContent = `Not quite. The correct answer was "${answer}."`;
+          statusLineEl.className = "status-line bad";
+          addResult(`Missed: ${guess} → ${answer}`);
+        }
+
+        updateMeta();
+        nextBtn.disabled = false;
+      }
+
+      nextBtn.addEventListener("click", () => {
+        gameState.currentRound += 1;
+        renderRound();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        gameState = {
+          score: 0,
+          currentRound: 0,
+          answered: 0,
+          playedRounds: [],
+        };
+        resultsListEl.innerHTML = "";
+        buildDeck();
+        renderRound();
+      });
+
+      buildDeck();
+      renderRound();
+    </script>
+  </body>
+</html>
