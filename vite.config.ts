@@ -205,8 +205,27 @@ function vitePluginStorageProxy(): Plugin {
 
 const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
 
+function vitePluginSpaFallback(): Plugin {
+  return {
+    name: "spa-fallback-copy",
+    closeBundle() {
+      const outputDir = path.resolve(import.meta.dirname, "dist", "public");
+      const indexPath = path.join(outputDir, "index.html");
+      const notFoundPath = path.join(outputDir, "404.html");
+
+      if (fs.existsSync(indexPath)) {
+        fs.copyFileSync(indexPath, notFoundPath);
+      }
+    },
+  };
+}
+
+const isGitHubPagesBuild = process.env.GITHUB_PAGES === "true";
+const gitHubPagesBase = process.env.GITHUB_PAGES_BASE || "/lauren-pratt-final/";
+
 export default defineConfig({
-  plugins,
+  base: isGitHubPagesBuild ? gitHubPagesBase : "/",
+  plugins: [...plugins, vitePluginSpaFallback()],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

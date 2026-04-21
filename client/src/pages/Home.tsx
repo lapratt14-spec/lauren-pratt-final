@@ -50,6 +50,8 @@ const experiencePreview = [
   },
 ];
 
+const scratchPageHref = `${import.meta.env.BASE_URL}scratch.html`;
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -139,12 +141,15 @@ export default function Home() {
               </article>
 
               <div className="space-y-5">
-                <article className="portrait-frame">
-                  <img
-                    src="/manus-storage/lauren-pratt-headshot_9753d3d0.webp"
-                    alt="Lauren Pratt portrait"
-                    className="h-[350px] w-full rounded-[1.7rem] object-cover object-center"
-                  />
+                <article className="portrait-frame flex h-[350px] flex-col justify-end overflow-hidden rounded-[1.7rem] bg-[radial-gradient(circle_at_top,rgba(222,233,226,0.95),rgba(199,213,204,0.92)_34%,rgba(27,67,50,0.94)_100%)] p-6 text-white">
+                  <div className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(180deg,rgba(255,255,255,0.26),transparent)]" />
+                  <div className="relative rounded-[1.6rem] border border-white/20 bg-[rgba(248,246,240,0.12)] p-5 backdrop-blur-sm">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[rgba(255,255,255,0.72)]">Lauren Pratt</p>
+                    <p className="mt-3 font-display text-4xl leading-none">LP</p>
+                    <p className="mt-4 max-w-xs text-sm leading-7 text-[rgba(255,255,255,0.82)]">
+                      Accounting student at BYU focused on disciplined growth, analytical foundations, and professional communication.
+                    </p>
+                  </div>
                 </article>
                 <article className="hero-card bg-[var(--ink)] p-6 text-white">
                   <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.7)]">At a glance</p>
@@ -283,7 +288,7 @@ export default function Home() {
                 Résumé
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="/scratch.html" className="inline-flex items-center gap-2 transition hover:text-[var(--ink)]">
+              <a href={scratchPageHref} className="inline-flex items-center gap-2 transition hover:text-[var(--ink)]">
                 Scratch page
                 <Music4 className="h-4 w-4" />
               </a>
